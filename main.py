@@ -13,13 +13,20 @@ url = f'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cconte
 json_url = urllib.request.urlopen(url)
 data = json.loads(json_url.read())
 
-print("\n\nEnter -1 at any input stage to abort further downloading.")
+preference = int(input("Do you want automatic downloading of the best possible resolution for all the videos?(Press 1)\nOR\nDo you want to choose manually?(Press 2)\n"))
+subs_pref = 0
+if preference == 1:
+    subs_pref = int(input("Do you want to download English subs if available? (Press 1 for yes, 0 for no.\n"))
 
 def select_available_options(video):   
     print("\nAvailaible option(s):")
     for i, value in enumerate(video.streams, start = 1):
         print(str(i) + ". " + value.type.capitalize() + " Format: ." + value.subtype + ", Resolution: " + str(value.resolution) + ", Size: " + str(round(value.filesize_approx/1048576,2)) + "MB")
-    option = int(input("\nChoose the option you want (Press 0 to skip this video): "))
+    try:
+        option = int(input("\nChoose the option you want (Press 0 to skip this video): "))
+    except ValueError:
+        option = int(input("Invalid Input. Please choose correct item number between {} and {}. Press 0 to skip, -1 to exit,\n\nChoose the option you want: ".format(1, len(video.streams))))
+    
     while option < -1 or option > len(video.streams):
         option = int(input("Invalid Input. Please choose correct item number between {} and {}. Press 0 to skip, -1 to exit,\n\nChoose the option you want: ".format(1, len(video.streams))))
     return option
@@ -32,9 +39,9 @@ def getVideoLink(i, data):
     link = "https://www.youtube.com/watch?v=" + data['items'][i]['snippet']['resourceId']['videoId']
     return link
 
-def downloadVideo(video, option):
-    print("\nDownloading: " + '" '+ title + "." + video.streams[option-1].subtype + '"'+ " ...")
-    video.streams[option-1].download(filename = title)
+def downloadVideo(video, itag):
+    print("\nDownloading: " + '" '+ title + "." + video.streams.get_by_itag(itag).subtype + '"'+ " ...")
+    video.streams.get_by_itag(itag).download(filename = title)
     print("Download completed.\n")
     
 def select_Subtitle(caps):
@@ -44,12 +51,12 @@ def select_Subtitle(caps):
         print(str(i) + ". " + sub.name)
     subs_option = int(input("Enter the item number to download that subtitle otherwise, press 0: "))
     while subs_option < -1 or subs_option > len(caps):
-            subs_option = int(input("Invalid Input. Please choose correct item number between {} and {}. Press 0 to skip, -1 to exit,\n\nChoose the option you want: ".format(1, len(caps))))
+            subs_option = int(input("Invalid Input. Please choose correct item number between {} and {}.\n\nChoose the option you want: ".format(1, len(caps))))
     return subs_option
 
-def downloadSubs(caps, option):
-    list(caps.lang_code_index.values())[subs_option-1].download(title = title)
-    print("\nDownload completed.\n")
+def downloadSubs(caps, lang_code):
+    caps[lang_code].download(title = title)
+    print("\nSubtitles downloaded.\n")
     
 for i in range(len(data['items'])):
     title = getVideoTitle(i, data)
@@ -58,24 +65,31 @@ for i in range(len(data['items'])):
     print("\n\nVideo Name: " + title)
 
     video = YouTube(video_link)
-    option = select_available_options(video)
+    if preference == 1:
+        itag = video.streams.get_highest_resolution().itag
+    elif preference == 2:
+        option = select_available_options(video)
     
-    if option == 0:
-        continue
-    elif option == -1:
-        print("Exiting..\nThanks for using,\nMade with <3 by Anant Verma")
-        sys.exit()
-    else:
-        downloadVideo(video, option)
-
+        if option == 0:
+            continue
+        elif option == -1:
+            print("Thanks for using.\n Made with <3 by Anant Verma")
+            sys.exit()
+        itag = video.streams[option-1].itag
+    
+    downloadVideo(video, itag)
+    
     caps = video.captions
     if(len(caps) >=1):
-        subs_option = select_Subtitle(caps)
-        if subs_option == 0:
-            pass
-        elif subs_option == -1:
-            print("Thanks for using,\nMade with <3 by Anant Verma")
-            sys.exit()
-        else:
-            downloadSubs(caps, option)
+        if subs_pref == 0:
+            subs_option = select_Subtitle(caps)
+            if subs_option == 0:
+                continue
+            elif subs_option == -1:
+                print("Thanks for using.\n Made with <3 by Anant Verma")
+                sys.exit()
+            lang_code = list(caps.lang_code_index.values())[subs_option-1].code
+        elif subs_pref == 1:
+            lang_code = "en"
+        downloadSubs(caps, lang_code)
     print("-"*50)
