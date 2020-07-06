@@ -5,14 +5,30 @@ from pytube import YouTube
 import sys
 
 api_key = 'YOUR_API_KEY'    # enter your api key here
+answer = int(input("What do you want to download?\n1.Video\n2.Playlist\n"))
 
-playlist = input("Enter the playlist link:\n")
-playlist_id = re.split('list=', playlist)[1]
-
-url = f'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=25&playlistId={playlist_id}&key={api_key}'
-
-json_url = urllib.request.urlopen(url)
-data = json.loads(json_url.read())
+def exitDownloader():
+    print("Thanks for using.\nMade with <3 by Anant Verma")
+    sys.exit()
+    
+while answer != 1 and answer !=2 and answer != -1:
+    answer = int(input("Invalid input. Press 1 for Video, 2 for Playlist (Enter -1 to exit): "))
+if answer == -1:
+    exitDownloader()
+elif answer == 1:
+    video = input("Enter the video link:\n")
+    video_id = video.split("watch?v=")[1].split("&")[0]
+    url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={api_key}'
+    json_url = urllib.request.urlopen(url)
+    data = json.loads(json_url.read())
+elif answer == 2:
+    playlist = input("Enter the playlist link:\n")
+    playlist_id = re.split('list=', playlist)[1]
+    
+    url = f'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=25&playlistId={playlist_id}&key={api_key}'
+    
+    json_url = urllib.request.urlopen(url)
+    data = json.loads(json_url.read())
 
 while 1:
     try:
@@ -29,7 +45,7 @@ def exitDownloader():
     print("Thanks for using.\nMade with <3 by Anant Verma")
     sys.exit()
     
-preference = int(input("Do you want automatic downloading of the best possible resolution for all the videos?(Press 1)\nOR\nDo you want to choose manually?(Press 2)\n"))
+preference = int(input("Do you want automatic downloading of the best possible resolution?(Press 1)\nOR\nDo you want to choose manually?(Press 2)\n"))
 while preference != 1 and preference != 2 and preference != -1:
     preference = int(input("Invalid Input. Please enter 1 or 2 only (Enter -1 to exit): "))
 subs_pref = 0
@@ -37,7 +53,7 @@ subs_pref = 0
 if preference== -1:
     exitDownloader()
     
-elif preference == 1:
+elif preference == 1 and answer == 2:
     subs_pref = int(input("Do you want to download English subs if available? (Press 1 for yes, 0 for no)\n"))
     while subs_pref != 1 and subs_pref != 0 and subs_pref != -1:
         subs_pref = int(input("Invalid Input. Please enter either 1 or 0 (Enter -1 to exit): "))
@@ -59,15 +75,22 @@ def select_available_options(video):
     return option
     
 def getVideoTitle(i, data):
-    title = str(i+1) + ". " + data['items'][i]['snippet']['title']
+    if answer == 1:
+        title = data['items'][i]['snippet']['title']
+    elif answer == 2:
+        title = str(i+1) + ". " + data['items'][i]['snippet']['title']
     return title
 
 def getVideoLink(i, data):
-    link = "https://www.youtube.com/watch?v=" + data['items'][i]['snippet']['resourceId']['videoId']
+    pre = "https://www.youtube.com/watch?v="
+    if answer == 1:
+        link = pre + video_id
+    else:
+        link =  pre + data['items'][i]['snippet']['resourceId']['videoId']
     return link
 
 def downloadVideo(video, itag):
-    print("\nDownloading: " + '" '+ title + "." + video.streams.get_by_itag(itag).subtype + '"'+ " ...")
+    print("\nDownloading: " + '"'+ title + "." + video.streams.get_by_itag(itag).subtype + '"'+ " ...")
     video.streams.get_by_itag(itag).download(filename = title)
     print("Download completed.\n")
     
