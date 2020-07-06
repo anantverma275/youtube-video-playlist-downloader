@@ -25,10 +25,25 @@ while 1:
     except:
         break
 
+def exitDownloader():
+    print("Thanks for using.\nMade with <3 by Anant Verma")
+    sys.exit()
+    
 preference = int(input("Do you want automatic downloading of the best possible resolution for all the videos?(Press 1)\nOR\nDo you want to choose manually?(Press 2)\n"))
+while preference != 1 and preference != 2 and preference != -1:
+    preference = int(input("Invalid Input. Please enter 1 or 2 only (Enter -1 to exit): "))
 subs_pref = 0
-if preference == 1:
-    subs_pref = int(input("Do you want to download English subs if available? (Press 1 for yes, 0 for no.\n"))
+
+if preference== -1:
+    exitDownloader()
+    
+elif preference == 1:
+    subs_pref = int(input("Do you want to download English subs if available? (Press 1 for yes, 0 for no)\n"))
+    while subs_pref != 1 and subs_pref != 0 and subs_pref != -1:
+        subs_pref = int(input("Invalid Input. Please enter either 1 or 0 (Enter -1 to exit): "))
+
+if subs_pref == -1:
+    exitDownloader()
 
 def select_available_options(video):   
     print("\nAvailaible option(s):")
@@ -85,8 +100,7 @@ for i in range(len(data['items'])):
         if option == 0:
             continue
         elif option == -1:
-            print("Thanks for using.\n Made with <3 by Anant Verma")
-            sys.exit()
+            exitDownloader()
         itag = video.streams[option-1].itag
     
     downloadVideo(video, itag)
@@ -98,10 +112,11 @@ for i in range(len(data['items'])):
             if subs_option == 0:
                 continue
             elif subs_option == -1:
-                print("Thanks for using.\n Made with <3 by Anant Verma")
-                sys.exit()
+                exitDownloader()
             lang_code = list(caps.lang_code_index.values())[subs_option-1].code
         elif subs_pref == 1:
             lang_code = "en"
         downloadSubs(caps, lang_code)
     print("-"*50)
+print("Thanks for using.\nMade with <3 by Anant Verma")
+sys.exit()
