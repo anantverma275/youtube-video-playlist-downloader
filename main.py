@@ -3,7 +3,7 @@ import json
 import urllib.request
 from pytube import YouTube
 
-api_key = 'Your_API_Key'    # enter your api key here
+api_key = 'API_Key'    # enter your api key here
 
 playlist = input("Enter the playlist link")
 playlist_id = re.split('list=', playlist)[1]
@@ -39,3 +39,17 @@ for i in range(len(data['items'])):
     print("\nDownloading: " + title + "...")
     yt.streams[o-1].download(filename = title)
     print("Download completed.\n")
+    caps = yt.captions
+    if(len(caps) >=1):
+        print("Subtitles are available for the video in the following languages.")
+        caps_list = list(caps.lang_code_index.values())
+        for i, sub in enumerate(caps_list,  start = 1):
+            print(str(i) + ". " + sub.name)
+        s = int(input("Enter the item number to download that subtitle otherwise, press 0.\n"))
+        while s < 0 or s > len(caps):
+            s = int(input("Invalid Input. Please choose correct item number between {} and {}.\n\nChoose the option you want: ".format(1, len(caps))))
+        if s == 0:
+            pass
+        else:
+            caps_list[s-1].download(title = title)
+    print("Download completed.\n-\n"*50)
