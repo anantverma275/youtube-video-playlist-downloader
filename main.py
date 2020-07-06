@@ -10,8 +10,20 @@ playlist = input("Enter the playlist link:\n")
 playlist_id = re.split('list=', playlist)[1]
 
 url = f'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=25&playlistId={playlist_id}&key={api_key}'
+
 json_url = urllib.request.urlopen(url)
 data = json.loads(json_url.read())
+
+while 1:
+    try:
+        token = data['nextPageToken']
+        url = f'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=50&pageToken={token}&playlistId={playlist_id}&key={api_key}'
+        json_url = urllib.request.urlopen(url)
+        temp = json.loads(json_url.read())
+        data['items'].extend(temp['items'])
+        data['nextPageToken'] = temp['nextPageToken']
+    except:
+        break
 
 preference = int(input("Do you want automatic downloading of the best possible resolution for all the videos?(Press 1)\nOR\nDo you want to choose manually?(Press 2)\n"))
 subs_pref = 0
