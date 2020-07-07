@@ -61,17 +61,20 @@ elif preference == 1 and answer == 2:
 if subs_pref == -1:
     exitDownloader()
 
-def select_available_options(video):   
+def getVideoStreams(video):
+    video_streams = []
+    for stream in video.streams:
+        if stream.audio_codec:
+            video_streams.append(stream)
+    return video_streams
+
+def select_available_options(streams):   
     print("\nAvailaible option(s):")
-    for i, value in enumerate(video.streams, start = 1):
-        print(str(i) + ". " + value.type.capitalize() + " Format: ." + value.subtype + ", Resolution: " + str(value.resolution) + ", Size: " + str(round(value.filesize_approx/1048576,2)) + "MB")
-    try:
-        option = int(input("\nChoose the option you want (Press 0 to skip this video): "))
-    except ValueError:
-        option = int(input("Invalid Input. Please choose correct item number between {} and {}. Press 0 to skip, -1 to exit,\n\nChoose the option you want: ".format(1, len(video.streams))))
-    
-    while option < -1 or option > len(video.streams):
-        option = int(input("Invalid Input. Please choose correct item number between {} and {}. Press 0 to skip, -1 to exit,\n\nChoose the option you want: ".format(1, len(video.streams))))
+    for i, stream in enumerate(streams, start = 1):
+        print(str(i) + ". " + stream.type.capitalize() + " Format: ." + stream.subtype + ", Resolution: " + str(stream.resolution) + ", Size: " + str(round(stream.filesize_approx/1048576,2)) + "MB")
+    option = int(input("\nChoose the option you want (Press 0 to skip this video): "))
+    while option < -1 or option > len(streams):
+        option = int(input("Invalid Input. Please choose correct item number between {} and {}. Press 0 to skip, -1 to exit,\n\nChoose the option you want: ".format(1, len(streams))))
     return option
     
 def getVideoTitle(i, data):
@@ -112,19 +115,21 @@ for i in range(len(data['items'])):
     title = getVideoTitle(i, data)
     video_link = getVideoLink(i, data)
 
-    print("\n\nVideo Name: " + title)
-
+    print("\nConnecting...")
     video = YouTube(video_link)
+    print("\n\nConnected.\nVideo Name: " + title)
+    video_streams = getVideoStreams(video)
     if preference == 1:
+        print("\n\nFinding the best quality")
         itag = video.streams.get_highest_resolution().itag
     elif preference == 2:
-        option = select_available_options(video)
+        option = select_available_options(video_streams)
     
         if option == 0:
             continue
         elif option == -1:
             exitDownloader()
-        itag = video.streams[option-1].itag
+        itag = video_streams[option-1].itag
     
     downloadVideo(video, itag)
     
