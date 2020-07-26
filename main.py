@@ -4,7 +4,7 @@ import urllib.request
 from pytube import YouTube
 import sys
 
-api_key = 'YOUR_API_KEY'    # enter your api key here
+api_key = 'AIzaSyBM2C6EmXIeKcXrU1GdU3uq7M8qMQVoulg'    # enter your api key here
 answer = int(input("What do you want to download?\n1.Video\n2.Playlist\n"))
 
 def exitDownloader():
