@@ -4,9 +4,9 @@
 &nbsp;&nbsp;i) Python3:  <a href = "https://www.python.org/downloads/">Download Python </a>
 
 
-&nbsp;&nbsp;ii) PyTube3: Open terminal and type the following command:
+&nbsp;&nbsp;ii) Other dependencies using:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;```pip3 install pytube3```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;```pip3 install -r requirements.txt```
 
 
 ## <br> 2. How to use? :
@@ -47,6 +47,9 @@
 &nbsp;&nbsp;iv. Option to automatically download all the videos (of the playlist) in the best available resolution.
 
 
+&nbsp;&nbsp;v. Option to download all the videos or particular indices or a range of videos.
+
+
 ## <br> 4. Coming soon :
 
 &nbsp;&nbsp;i. Option to download song playlists curated by YouTube
@@ -55,7 +58,7 @@
 &nbsp;&nbsp;ii. Option to download videos using shortened URL.
 
 
-&nbsp;&nbsp;iii. Option to download selected videos from a Playlist
+&nbsp;&nbsp;~~iii. Option to download selected videos from a Playlist~~
 
 
 &nbsp;&nbsp;iv. A user friendly web app for "non so techy users" :)

@@ -41,25 +41,64 @@ while 1:
     except:
         break
 
-def exitDownloader():
-    print("Thanks for using.\nMade with <3 by Anant Verma")
-    sys.exit()
-    
-preference = int(input("Do you want automatic downloading of the best possible resolution?(Press 1)\nOR\nDo you want to choose manually?(Press 2)\n"))
+#options to download all, specific videos, range of videos
+op = 0
+if answer == 2:
+    while 1:
+        op = int(input(
+            "Do you want to download all(0) or specific videos(1) or a range of videos from start index to end index(2)?"))
+        if op != 0 and op != 1 and op != 2:
+            continue
+        else:
+            break
+
+    if op == 0:
+        pass
+
+    elif op == 1:
+        while 1:
+            indices = list(map(int, input(
+                f"Enter the indices of the video you want to download starting from 1 to {length}").split()))
+            if max(indices) > length or min(indices) < 1:
+                print("Please enter valid indices\n")
+                continue
+            else:
+                break
+
+    elif op == 2:
+        while 1:
+            try:
+                start, end = map(int, input(
+                    f"Enter start, end index (default: 1, {length}):\n").split())
+            except ValueError:
+                print("Please enter valid value for both start and end")
+                continue
+            if start <= end and start >= 1 and end <= length:
+                break
+            else:
+                print("Please enter valid value for both start and end")
+                pass
+
+preference = int(input(
+    "Do you want automatic downloading of the best possible resolution?(Press 1)\nOR\nDo you want to choose manually?(Press 2)\n"))
 while preference != 1 and preference != 2 and preference != -1:
-    preference = int(input("Invalid Input. Please enter 1 or 2 only (Enter -1 to exit): "))
+    preference = int(
+        input("Invalid Input. Please enter 1 or 2 only (Enter -1 to exit): "))
 subs_pref = 0
 
-if preference== -1:
+if preference == -1:
     exitDownloader()
-    
+
 elif preference == 1 and answer == 2:
-    subs_pref = int(input("Do you want to download English subs if available? (Press 1 for yes, 0 for no)\n"))
+    subs_pref = int(input(
+        "Do you want to download English subs if available? (Press 1 for yes, 0 for no)\n"))
     while subs_pref != 1 and subs_pref != 0 and subs_pref != -1:
-        subs_pref = int(input("Invalid Input. Please enter either 1 or 0 (Enter -1 to exit): "))
+        subs_pref = int(
+            input("Invalid Input. Please enter either 1 or 0 (Enter -1 to exit): "))
 
 if subs_pref == -1:
     exitDownloader()
+
 
 def getVideoStreams(video):
     video_streams = []
@@ -68,15 +107,19 @@ def getVideoStreams(video):
             video_streams.append(stream)
     return video_streams
 
-def select_available_options(streams):   
+
+def select_available_options(streams):
     print("\nAvailaible option(s):")
-    for i, stream in enumerate(streams, start = 1):
-        print(str(i) + ". " + stream.type.capitalize() + " Format: ." + stream.subtype + ", Resolution: " + str(stream.resolution) + ", Size: " + str(round(stream.filesize_approx/1048576,2)) + "MB")
-    option = int(input("\nChoose the option you want (Press 0 to skip this video): "))
+    for i, stream in enumerate(streams, start=1):
+        print(str(i) + ". " + stream.type.capitalize() + " Format: ." + stream.subtype + ", Resolution: " +
+              str(stream.resolution) + ", Size: " + str(round(stream.filesize_approx/1048576, 2)) + "MB")
+    option = int(
+        input("\nChoose the option you want (Press 0 to skip this video): "))
     while option < -1 or option > len(streams):
         option = int(input("Invalid Input. Please choose correct item number between {} and {}. Press 0 to skip, -1 to exit,\n\nChoose the option you want: ".format(1, len(streams))))
     return option
-    
+
+
 def getVideoTitle(i, data):
     if answer == 1:
         title = data['items'][i]['snippet']['title']
@@ -84,34 +127,56 @@ def getVideoTitle(i, data):
         title = str(i+1) + ". " + data['items'][i]['snippet']['title']
     return title
 
+
 def getVideoLink(i, data):
     pre = "https://www.youtube.com/watch?v="
     if answer == 1:
         link = pre + video_id
     else:
-        link =  pre + data['items'][i]['snippet']['resourceId']['videoId']
+        link = pre + data['items'][i]['snippet']['resourceId']['videoId']
     return link
 
+
 def downloadVideo(video, itag):
-    print("\nDownloading: " + '"'+ title + "." + video.streams.get_by_itag(itag).subtype + '"'+ " ...")
-    video.streams.get_by_itag(itag).download(filename = title)
+    print("\nDownloading: " + '"' + title + "." +
+          video.streams.get_by_itag(itag).subtype + '"' + " ...")
+    video.streams.get_by_itag(itag).download(filename=title)
     print("Download completed.\n")
-    
+
+
 def select_Subtitle(caps):
     print("Subtitles are available for the video in the following languages.")
     caps_list = list(caps.lang_code_index.values())
-    for i, sub in enumerate(caps_list,  start = 1):
+    for i, sub in enumerate(caps_list,  start=1):
         print(str(i) + ". " + sub.name)
-    subs_option = int(input("Enter the item number to download that subtitle otherwise, press 0: "))
+    subs_option = int(
+        input("Enter the item number to download that subtitle otherwise, press 0: "))
     while subs_option < -1 or subs_option > len(caps):
-            subs_option = int(input("Invalid Input. Please choose correct item number between {} and {}.\n\nChoose the option you want: ".format(1, len(caps))))
+        subs_option = int(input(
+            "Invalid Input. Please choose correct item number between {} and {}.\n\nChoose the option you want: ".format(1, len(caps))))
     return subs_option
 
+
 def downloadSubs(caps, lang_code):
-    caps[lang_code].download(title = title)
+    caps[lang_code].download(title=title)
     print("\nSubtitles downloaded.\n")
-    
-for i in range(len(data['items'])):
+
+
+for i in range(length):
+    if op == 1:
+        if len(indices) == 0:
+            break
+        if i+1 in indices:
+            indices.remove(i+1)
+        else:
+            continue
+    elif op == 2:
+        if i + 1 < start:
+            print(str(i))
+            continue
+        elif i == end:
+            print(str(i))
+            break
     title = getVideoTitle(i, data)
     video_link = getVideoLink(i, data)
 
@@ -124,17 +189,17 @@ for i in range(len(data['items'])):
         itag = video.streams.get_highest_resolution().itag
     elif preference == 2:
         option = select_available_options(video_streams)
-    
+
         if option == 0:
             continue
         elif option == -1:
             exitDownloader()
         itag = video_streams[option-1].itag
-    
+
     downloadVideo(video, itag)
-    
+
     caps = video.captions
-    if(len(caps) >=1):
+    if(len(caps) >= 1):
         if subs_pref == 0:
             subs_option = select_Subtitle(caps)
             if subs_option == 0:
