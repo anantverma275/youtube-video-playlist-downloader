@@ -17,10 +17,15 @@ if answer == -1:
     exitDownloader()
 elif answer == 1:
     video = input("Enter the video link:\n")
-    video_id = video.split("watch?v=")[1].split("&")[0]
+    try:
+        video_id = video.split("watch?v=")[1].split("&")[0]
+    except:
+        video_id = video.split("be/")[1]
     url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={api_key}'
     json_url = urllib.request.urlopen(url)
     data = json.loads(json_url.read())
+    length = 1
+
 elif answer == 2:
     playlist = input("Enter the playlist link:\n")
     playlist_id = re.split('list=', playlist)[1]
@@ -29,6 +34,7 @@ elif answer == 2:
     
     json_url = urllib.request.urlopen(url)
     data = json.loads(json_url.read())
+    length = len(data['items'])
 
 while 1:
     try:
@@ -39,6 +45,7 @@ while 1:
         data['items'].extend(temp['items'])
         data['nextPageToken'] = temp['nextPageToken']
     except:
+        length = len(data['items'])
         break
 
 #options to download all, specific videos, range of videos
