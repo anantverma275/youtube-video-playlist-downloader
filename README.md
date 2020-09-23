@@ -50,7 +50,7 @@
 &nbsp;&nbsp;v. Option to download all the videos or particular indices or a range of videos.
 
 
-&nbsp;&nbsp;v. Option to download videos using shortened URL.
+&nbsp;&nbsp;vi. Option to download videos using shortened URL.
 
 
 ## <br> 4. Coming soon :
