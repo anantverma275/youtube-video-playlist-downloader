@@ -186,7 +186,7 @@ for i in range(length):
             break
     title = getVideoTitle(i, data)
     video_link = getVideoLink(i, data)
-
+    print("Video link to submit: " + video_link)
     print("\nConnecting...")
     video = YouTube(video_link)
     print("\n\nConnected.\nVideo Name: " + title)
